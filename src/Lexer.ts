@@ -8,17 +8,13 @@ class Lexer {
     public input: string;
     public output: Token[];
 
-    private _index: number;
-    private _line: number;
-    private _column: number;
+    private _index: number = 0;
+    private _line: number = 1;
+    private _column: number = 1;
 
     constructor(input: string) {
         this.input = input;
         this.output = [];
-
-        this._index = 0;
-        this._line = 1;
-        this._column = 1;
     }
 
     /**
@@ -195,22 +191,23 @@ class Lexer {
     public readIdentifier() {
         const location = this.getLocation();
         let value = '';
-        let isAlias = false;
+        let type = TOKEN_TYPE.IDENTIFIER;
 
         if (this.peekChar() === '@') {
-            isAlias = true;
+            type = TOKEN_TYPE.ALIAS;
             this.readChar(); // => '@'
         }
 
-        while (!this.isEOF() && /[$a-zA-Z_]/.test(this.peekChar())) {
+        if (this.peekChar() === '$') {
+            type = TOKEN_TYPE.EXPORT;
+            this.readChar(); // => '$'
+        }
+
+        while (!this.isEOF() && /[a-zA-Z_]/.test(this.peekChar())) {
             value += this.readChar();
         }
 
-        return new Token(
-            isAlias ? TOKEN_TYPE.ALIAS : TOKEN_TYPE.IDENTIFIER,
-            value,
-            location
-        );
+        return new Token(type, value, location);
     }
 
     /**

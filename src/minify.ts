@@ -29,24 +29,36 @@ export default function minify(input: string) {
 
     // Then write it back out from the tokens
     let output = '';
+    let lastConflictsWithIdentifier = false;
 
     for (const token of lex.output) {
         switch (token.type) {
             case TOKEN_TYPE.COMMENT:
-                continue;
+                break;
             case TOKEN_TYPE.ALIAS:
                 aliasMap[token.value] = getNextVarName();
-                output += '@' + aliasMap[token.value] + ' ';
-                continue;
+                output += '@' + aliasMap[token.value];
+                lastConflictsWithIdentifier = true;
+                break;
+            case TOKEN_TYPE.EXPORT:
+                output += '$' + token.value;
+                lastConflictsWithIdentifier = true;
+                break;
             case TOKEN_TYPE.STRING:
                 output += "'" + token.value + "'";
-                continue;
+                break;
             case TOKEN_TYPE.IDENTIFIER:
-                if (aliasMap.hasOwnProperty(token.value)) {
-                    output += aliasMap[token.value];
-                    continue;
+                if (lastConflictsWithIdentifier) {
+                    output += ' ';
                 }
+
+                output += aliasMap.hasOwnProperty(token.value)
+                    ? aliasMap[token.value]
+                    : token.value;
+                lastConflictsWithIdentifier = true;
+                break;
             default:
+                lastConflictsWithIdentifier = false;
                 output += token.value;
         }
     }

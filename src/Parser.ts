@@ -18,8 +18,9 @@ class Parser {
     public tokens: Token[];
     public selectors: { [id: string]: Selector };
 
-    private _index: number;
-    private _aliases: { [name: string]: Identifier };
+    private _index: number = 0;
+    private _aliases: { [name: string]: Identifier } = {};
+    private _exports: { [name: string]: Identifier } = {};
 
     constructor(tokens: Token[], selectors?: Selector[]) {
         this.tokens = tokens;
@@ -30,9 +31,6 @@ class Parser {
         }
 
         this.addSelector(OneOfSelector);
-
-        this._index = 0;
-        this._aliases = {};
     }
 
     /**
@@ -42,19 +40,46 @@ class Parser {
         while (this.hasNext()) {
             this.parseTable();
         }
+
+        if (Object.keys(this._exports).length === 0) {
+            this.syntaxError(
+                `A LootML file must have at least one export`,
+                null
+            );
+        }
+        return this._exports;
     }
 
     /**
      * Parses a top level identifier with an optional alias
      */
     public parseTable() {
-        const alias = this.matchToken(TOKEN_TYPE.ALIAS, true);
+        // Parse modifiers
+        let alias = null;
+        let exp = null;
+
+        alias = this.matchToken(TOKEN_TYPE.ALIAS, true);
+        exp = this.matchToken(TOKEN_TYPE.EXPORT, true);
+
+        if (alias === null) {
+            alias = this.matchToken(TOKEN_TYPE.ALIAS, true);
+        }
+
+        // Parse the table identifier
         const identifier = this.parseIdentifier();
 
+        // Add an alias if one is defined
         if (alias) {
             if (this.hasSelector(alias.value)) {
                 this.syntaxError(
-                    `Alias "${alias.value}" has the same name as a selector`,
+                    `Alias '${alias.value}' has the same name as a selector`,
+                    alias.location
+                );
+            }
+
+            if (this.hasExport(alias.value)) {
+                this.syntaxError(
+                    `Alias '${alias.value}' has the same name as an export`,
                     alias.location
                 );
             }
@@ -67,6 +92,29 @@ class Parser {
             }
 
             this.addAlias(alias.value, identifier);
+        }
+
+        // Add an export if one is defined
+        if (exp) {
+            if (this.hasSelector(exp.value)) {
+                this.syntaxError(
+                    `Export '${exp.value}' has the same name as a selector`,
+                    exp.location
+                );
+            }
+
+            if (this.hasAlias(exp.value)) {
+                this.syntaxError(
+                    `Export '${exp.value}' has the same name as an alias`,
+                    exp.location
+                );
+            }
+
+            if (this.hasExport(exp.value)) {
+                this.syntaxError(`Duplicate export ${exp.value}`, exp.location);
+            }
+
+            this.addExport(exp.value, identifier);
         }
     }
 
@@ -277,7 +325,7 @@ class Parser {
                     return parseInt(value, 2);
                 default:
                     this.syntaxError(
-                        `Invalid number "${token.value}"`,
+                        `Invalid number '${token.value}'`,
                         token.location
                     );
             }
@@ -290,12 +338,18 @@ class Parser {
      * Adds a new selector
      */
     public addSelector(selector: Selector) {
-        if (selector.identifier === 'item') {
+        const name = selector.identifier;
+
+        if (name === 'item') {
             throw new Error(`'item' is not an allowed selector name`);
         }
 
-        if (!this.hasSelector(selector.identifier)) {
-            this.selectors[selector.identifier] = selector;
+        if (
+            !this.hasExport(name) &&
+            !this.hasAlias(name) &&
+            !this.hasSelector(name)
+        ) {
+            this.selectors[name] = selector;
         } else {
             throw new Error(`Duplicate selector '${name}'`);
         }
@@ -325,7 +379,11 @@ class Parser {
             throw new Error(`'item' is not an allowed alias name`);
         }
 
-        if (!this.hasAlias(name)) {
+        if (
+            !this.hasExport(name) &&
+            !this.hasAlias(name) &&
+            !this.hasSelector(name)
+        ) {
             this._aliases[name] = identifier;
         } else {
             throw new Error(`Duplicate identifier '${name}'`);
@@ -344,6 +402,41 @@ class Parser {
      */
     public hasAlias(name: string) {
         return this._aliases.hasOwnProperty(name);
+    }
+
+    /**
+     * Adds an export if an identifier with the same name doesn't already exist
+     * @param name
+     * @param identifier
+     */
+    public addExport(name: string, identifier: Identifier) {
+        if (name === 'item') {
+            throw new Error(`'item' is not an allowed alias name`);
+        }
+
+        if (
+            !this.hasExport(name) &&
+            !this.hasAlias(name) &&
+            !this.hasSelector(name)
+        ) {
+            this._exports[name] = identifier;
+        } else {
+            throw new Error(`Duplicate identifier '${name}'`);
+        }
+    }
+
+    /**
+     * Gets the given export if it exists
+     */
+    public getExport(name: string) {
+        return this.hasExport(name) ? this._exports[name] : null;
+    }
+
+    /**
+     * Checks whether the given alias name exists
+     */
+    public hasExport(name: string) {
+        return this._exports.hasOwnProperty(name);
     }
 
     /**
@@ -421,9 +514,14 @@ class Parser {
      */
     public syntaxError(
         message: string,
-        { line, column }: { line: number; column: number }
+        location: { line: number; column: number } | null
     ) {
-        throw new SyntaxError(`${message} (at ${line}:${column})`);
+        if (location) {
+            const { line, column } = location;
+            throw new SyntaxError(`${message} (at ${line}:${column})`);
+        } else {
+            throw new SyntaxError(message);
+        }
     }
 
     /**

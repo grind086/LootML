@@ -8,8 +8,9 @@ export enum TOKEN_TYPE {
     LEFT_BRACE,
     RIGHT_BRACE,
     HYPHEN,
-    ALIAS,
     IDENTIFIER,
+    ALIAS,
+    EXPORT,
     COMMENT,
 
     // Basic types
