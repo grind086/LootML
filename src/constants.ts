@@ -17,3 +17,8 @@ export enum TOKEN_TYPE {
     NUMBER,
     STRING
 }
+
+export enum RETURN_ITEM_TYPE {
+    SINGLE,
+    MULTIPLE
+}

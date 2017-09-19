@@ -1,3 +1,4 @@
+import compile from './compile';
 import { TOKEN_TYPE } from './constants';
 import Token from './Token';
 import {
@@ -47,7 +48,13 @@ class Parser {
                 null
             );
         }
-        return this._exports;
+
+        const output: { [key: string]: string } = {};
+        Object.keys(this._exports).forEach(
+            key => (output[key] = compile(this._exports[key]))
+        );
+
+        return output;
     }
 
     /**
@@ -132,7 +139,7 @@ class Parser {
     /**
      * Parses a list of weighted identifiers
      */
-    public parseIdentifierList(): Identifier[] {
+    public parseIdentifierList(): IdentifierObject[] {
         return this.parseList(
             TOKEN_TYPE.LEFT_BRACE,
             TOKEN_TYPE.RIGHT_BRACE,
@@ -166,7 +173,7 @@ class Parser {
     }
 
     /**
-     * Parses a single argument. Can be number, amount, string, or identifier
+     * Parses a single argument. Can be number, amount, or string.
      */
     public parseArgument() {
         const peek = this.peekToken();
@@ -176,8 +183,6 @@ class Parser {
                 return this.parseAmount();
             case TOKEN_TYPE.STRING:
                 return this.parseString();
-            case TOKEN_TYPE.IDENTIFIER:
-                return this.parseIdentifier();
             default:
                 this.syntaxError(
                     `Expected argument but got '${TOKEN_TYPE[
