@@ -1,4 +1,3 @@
-import compileTree from './compileTree';
 import { TOKEN_TYPE } from './constants';
 import Token from './Token';
 import {
@@ -59,17 +58,8 @@ class Parser {
             );
         }
 
-        console.log(JSON.stringify(this._exports, undefined, 2));
         this.output = this._exports;
-
         return this.output;
-        
-        // const output: { [key: string]: string } = {};
-        // Object.keys(this._exports).forEach(
-        //     key => (output[key] = compileTree(this._exports[key]))
-        // );
-
-        // return output;
     }
 
     /**

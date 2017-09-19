@@ -1,3 +1,4 @@
+import Compiler from '../Compiler';
 import Lexer from '../Lexer';
 import Parser from '../Parser';
 
@@ -44,16 +45,23 @@ allOf {
 }
 `;
 
-fs.writeFileSync(__dirname + '/compiled.js', compileJS(inputFile));
-console.log(minify(inputFile).length);
-console.log(compileJS(inputFile).length);
-console.log(compileJS(minify(inputFile)).length);
+// fs.writeFileSync(__dirname + '/compiled.js', compileJS(inputFile));
+// console.log(minify(inputFile).length);
+// console.log(compileJS(inputFile).length);
+// console.log(compileJS(minify(inputFile)).length);
 
-console.log(minify(inputFile));
+// console.log(minify(inputFile));
 
-// const lexer = new Lexer(inputFile);
-// const parser = new Parser(lexer.analyze());
-// const compiled = parser.parse();
+const lexer = new Lexer(inputFile);
+const parser = new Parser(lexer.analyze());
+const compiler = new Compiler(parser.parse());
+
+const compiled = compiler.compile();
+fs.writeFileSync(__dirname + '/compiled.js', compiled);
+
+const result = require(__dirname + '/compiled.js');
+
+console.log(result.test());
 
 // const fn = eval(compiled.test);
 // const res = {

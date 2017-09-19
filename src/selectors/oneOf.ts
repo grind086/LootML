@@ -6,10 +6,10 @@ const OneOfSelector: Selector = {
     numArgs: 0,
     returns: RETURN_ITEM_TYPE.SINGLE,
 
-    compile: (
+    compile(
         { list, compiledList, isWeighted, totalWeights, weights },
         err
-    ) => {
+    ) {
         const length = list.length;
         let index = '0';
 
@@ -21,6 +21,7 @@ const OneOfSelector: Selector = {
 
             index = `((r,w,i,l)=>{for(;i<l;i++)if((r-=w[i])<=0)return i;})(${rand},${weightArr},0,${length})`;
         }
+
         return `()=>${compiledList}[${index}]()`;
     }
 };

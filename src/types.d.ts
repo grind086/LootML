@@ -1,4 +1,4 @@
-import Parser from './Parser';
+import Compiler from './Compiler';
 import { PARSER_OBJECT_TYPE, RETURN_ITEM_TYPE, TOKEN_TYPE } from './constants';
 
 export type Argument = string | number | number[];
@@ -76,5 +76,9 @@ export interface Selector {
     numArgs: number;
     returns: RETURN_ITEM_TYPE
 
-    compile(options: CompileOptions, err: (message: string) => void): string;
+    compile(
+        this: Compiler,
+        options: CompileOptions,
+        err: (message: string) => void
+    ): string;
 }
