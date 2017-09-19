@@ -6,44 +6,7 @@ import { compileJS, minify } from '../';
 
 import * as fs from 'fs';
 
-const inputFile = `
-@Nothing
-item['NONE']
-
-@WorldBlues
-oneOf {
-    item['RareSword'],
-    item['RareSpear']
-}
-
-@WorldPurples
-oneOf {
-    item['EpicSword'],
-    item['EpicSpear']
-}
-
-@WorldJackpot
-item['Gold', 100000-1000000]
-
-@WorldDrops
-oneOf {
-    1000 Nothing,
-      10 WorldBlues,
-       1 WorldPurples,
-       1 WorldJackpot
-}
-
-$test
-allOf {
-    WorldDrops,
-    item['Gold', 100-1000],
-    oneOf {
-        2 Nothing,
-        item['Apple'],
-        item['Cloth scraps']
-    }
-}
-`;
+const inputFile = fs.readFileSync(__dirname + '/../../examples/rare_world_drops.loot', 'utf8');
 
 // fs.writeFileSync(__dirname + '/compiled.js', compileJS(inputFile));
 // console.log(minify(inputFile).length);

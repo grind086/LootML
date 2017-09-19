@@ -1,0 +1,36 @@
+@Nothing
+item['NONE']
+
+@WorldBlues
+oneOf {
+    item['RareSword'],
+    item['RareSpear']
+}
+
+@WorldPurples
+oneOf {
+    item['EpicSword'],
+    item['EpicSpear']
+}
+
+@WorldJackpot
+item['Gold', 10-100]
+
+@WorldDrops
+oneOf {
+    1000 Nothing,
+      10 WorldBlues,
+       1 WorldPurples,
+       1 WorldJackpot
+}
+
+$test
+allOf {
+    WorldDrops,
+    item['Copper', 100-1000],
+    someOf[2] {
+        5 Nothing,
+        item['Apple'],
+        item['Cloth scraps']
+    }
+}
