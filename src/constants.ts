@@ -22,3 +22,10 @@ export enum RETURN_ITEM_TYPE {
     SINGLE,
     MULTIPLE
 }
+
+export enum PARSER_OBJECT_TYPE {
+    ITEM,
+    SELECTOR,
+    ALIAS,
+    WEIGHTED_IDENTIFIER
+}

@@ -2,13 +2,15 @@ import compileTree from './compileTree';
 import { TOKEN_TYPE } from './constants';
 import Token from './Token';
 import {
-    Arguments,
-    Identifier,
-    IdentifierObject,
-    Item,
+    Argument,
+    ParserObject,
     Selector,
-    SelectorObject
+    WeightedIdentifier
 } from './types';
+
+import AliasObject from './parserObjects/AliasObject';
+import ItemObject from './parserObjects/ItemObject';
+import SelectorObject from './parserObjects/SelectorObject';
 
 import AllOfSelector from './selectors/allOf';
 import OneOfSelector from './selectors/oneOf';
@@ -21,14 +23,16 @@ import SomeOfSelector from './selectors/someOf';
 class Parser {
     public tokens: Token[];
     public selectors: { [id: string]: Selector };
+    public output: { [name: string]: ParserObject };
 
     private _index: number = 0;
-    private _aliases: { [name: string]: Identifier } = {};
-    private _exports: { [name: string]: Identifier } = {};
+    private _aliases: { [name: string]: ParserObject } = {};
+    private _exports: { [name: string]: ParserObject } = {};
 
     constructor(tokens: Token[], selectors?: Selector[]) {
         this.tokens = tokens;
         this.selectors = {};
+        this.output = {};
 
         this.addSelector(AllOfSelector);
         this.addSelector(OneOfSelector);
@@ -55,12 +59,17 @@ class Parser {
             );
         }
 
-        const output: { [key: string]: string } = {};
-        Object.keys(this._exports).forEach(
-            key => (output[key] = compileTree(this._exports[key]))
-        );
+        console.log(JSON.stringify(this._exports, undefined, 2));
+        this.output = this._exports;
 
-        return output;
+        return this.output;
+        
+        // const output: { [key: string]: string } = {};
+        // Object.keys(this._exports).forEach(
+        //     key => (output[key] = compileTree(this._exports[key]))
+        // );
+
+        // return output;
     }
 
     /**
@@ -134,7 +143,7 @@ class Parser {
     /**
      * Parses a list of arguments
      */
-    public parseArgumentList(): Arguments[] {
+    public parseArgumentList(): Argument[] {
         return this.parseList(
             TOKEN_TYPE.LEFT_BRACKET,
             TOKEN_TYPE.RIGHT_BRACKET,
@@ -145,7 +154,7 @@ class Parser {
     /**
      * Parses a list of weighted identifiers
      */
-    public parseIdentifierList(): IdentifierObject[] {
+    public parseIdentifierList(): WeightedIdentifier[] {
         return this.parseList(
             TOKEN_TYPE.LEFT_BRACE,
             TOKEN_TYPE.RIGHT_BRACE,
@@ -205,7 +214,7 @@ class Parser {
     /**
      * Parses an optional number, followed by an identifer
      */
-    public parseWeightedIdentifier(): IdentifierObject {
+    public parseWeightedIdentifier(): WeightedIdentifier {
         const weight = this.matchToken(TOKEN_TYPE.NUMBER)
             ? this.parseNumber()
             : 1;
@@ -234,13 +243,13 @@ class Parser {
             );
         }
 
-        return (null as any) as Identifier;
+        return (null as any) as ParserObject;
     }
 
     /**
      * Parses an alias
      */
-    public parseAlias(): Identifier {
+    public parseAlias(): AliasObject {
         const token = this.expectToken(TOKEN_TYPE.IDENTIFIER, true);
         const alias = this.getAlias(token.value);
 
@@ -248,7 +257,7 @@ class Parser {
             this.syntaxError(`Unknown alias '${token.value}'`, token.location);
         }
 
-        return alias!;
+        return new AliasObject(token.value, alias!);
     }
 
     /**
@@ -271,13 +280,13 @@ class Parser {
 
         const list = this.parseIdentifierList();
 
-        return { selector: selector!, args, list };
+        return new SelectorObject(selector!, args, list);
     }
 
     /**
      * Parses an item
      */
-    public parseItem(): Item {
+    public parseItem(): ItemObject {
         this.expectToken(TOKEN_TYPE.IDENTIFIER, true, 'item');
         this.expectToken(TOKEN_TYPE.LEFT_BRACKET, true);
 
@@ -288,7 +297,7 @@ class Parser {
 
         this.expectToken(TOKEN_TYPE.RIGHT_BRACKET, true);
 
-        return { type, amount };
+        return new ItemObject(type, amount);
     }
 
     /**
@@ -385,7 +394,7 @@ class Parser {
      * @param name
      * @param identifier
      */
-    public addAlias(name: string, identifier: Identifier) {
+    public addAlias(name: string, identifier: ParserObject) {
         if (name === 'item') {
             throw new Error(`'item' is not an allowed alias name`);
         }
@@ -420,7 +429,7 @@ class Parser {
      * @param name
      * @param identifier
      */
-    public addExport(name: string, identifier: Identifier) {
+    public addExport(name: string, identifier: ParserObject) {
         if (name === 'item') {
             throw new Error(`'item' is not an allowed alias name`);
         }
