@@ -10,7 +10,10 @@ import {
     SelectorObject
 } from './types';
 
+import AllOfSelector from './selectors/allOf';
 import OneOfSelector from './selectors/oneOf';
+import RepeatSelector from './selectors/repeat';
+import SomeOfSelector from './selectors/someOf';
 
 /**
  * Converts a list of tokens to javascript
@@ -27,11 +30,14 @@ class Parser {
         this.tokens = tokens;
         this.selectors = {};
 
+        this.addSelector(AllOfSelector);
+        this.addSelector(OneOfSelector);
+        this.addSelector(RepeatSelector);
+        this.addSelector(SomeOfSelector);
+
         if (selectors) {
             selectors.forEach(s => this.addSelector(s));
         }
-
-        this.addSelector(OneOfSelector);
     }
 
     /**

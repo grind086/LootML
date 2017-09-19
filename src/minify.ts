@@ -46,6 +46,7 @@ export default function minify(input: string) {
                 break;
             case TOKEN_TYPE.STRING:
                 output += "'" + token.value + "'";
+                lastConflictsWithIdentifier = false;
                 break;
             case TOKEN_TYPE.IDENTIFIER:
                 if (lastConflictsWithIdentifier) {
@@ -57,9 +58,13 @@ export default function minify(input: string) {
                     : token.value;
                 lastConflictsWithIdentifier = true;
                 break;
-            default:
-                lastConflictsWithIdentifier = false;
+            case TOKEN_TYPE.NUMBER:
                 output += token.value;
+                lastConflictsWithIdentifier = token.value === '0';
+                break;
+            default:
+                output += token.value;
+                lastConflictsWithIdentifier = false;
         }
     }
 

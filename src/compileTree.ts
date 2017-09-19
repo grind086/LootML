@@ -1,3 +1,4 @@
+import { RETURN_ITEM_TYPE } from './constants';
 import { Identifier, Item, Selector, SelectorObject } from './types';
 
 /**
@@ -49,7 +50,7 @@ export default function compileTree(root: Identifier): string {
                     .join(',') +
                 ']';
 
-            root.compiled = selector.compile(
+            const compiled = selector.compile(
                 {
                     list,
                     args,
@@ -62,6 +63,11 @@ export default function compileTree(root: Identifier): string {
                     throw new Error(err);
                 }
             );
+
+            root.compiled =
+                selector.returns === RETURN_ITEM_TYPE.MULTIPLE
+                    ? `()=>Array.prototype.concat.apply([],(${compiled})())`
+                    : compiled;
         }
     }
 

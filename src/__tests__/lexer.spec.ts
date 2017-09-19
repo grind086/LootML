@@ -1,41 +1,55 @@
 import Lexer from '../Lexer';
-import minify from '../minify';
 import Parser from '../Parser';
 
-import { compileJS } from '../';
+import { compileJS, minify } from '../';
 
 import * as fs from 'fs';
 
 const inputFile = `
-@MyItem
-item['MINE', 1-6]
+@Nothing
+item['NONE']
 
-@YourItem
-item['YOURS']
-
-@OurItems
+@WorldBlues
 oneOf {
-    MyItem,
-    YourItem
+    item['RareSword'],
+    item['RareSpear']
+}
+
+@WorldPurples
+oneOf {
+    item['EpicSword'],
+    item['EpicSpear']
+}
+
+@WorldJackpot
+item['Gold', 100000-1000000]
+
+@WorldDrops
+oneOf {
+    1000 Nothing,
+      10 WorldBlues,
+       1 WorldPurples,
+       1 WorldJackpot
 }
 
 $test
-@MyTable
-oneOf {
+allOf {
+    WorldDrops,
+    item['Gold', 100-1000],
     oneOf {
-        OurItems,
-        item['item2', 5-7]
-    },
-    YourItem
-}
-
-oneOf {
-    2 MyItem,
-    YourItem
+        2 Nothing,
+        item['Apple'],
+        item['Cloth scraps']
+    }
 }
 `;
 
 fs.writeFileSync(__dirname + '/compiled.js', compileJS(inputFile));
+console.log(minify(inputFile).length);
+console.log(compileJS(inputFile).length);
+console.log(compileJS(minify(inputFile)).length);
+
+console.log(minify(inputFile));
 
 // const lexer = new Lexer(inputFile);
 // const parser = new Parser(lexer.analyze());
