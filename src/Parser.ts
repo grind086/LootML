@@ -68,14 +68,6 @@ class Parser {
 
             this.addAlias(alias.value, identifier);
         }
-
-        console.log(
-            JSON.stringify(
-                { alias: (alias || {}).value, identifier },
-                undefined,
-                2
-            )
-        );
     }
 
     /**
@@ -230,7 +222,7 @@ class Parser {
         this.expectToken(TOKEN_TYPE.IDENTIFIER, true, 'item');
         this.expectToken(TOKEN_TYPE.LEFT_BRACKET, true);
 
-        const type = this.expectToken(TOKEN_TYPE.STRING, true).value;
+        const type = this.parseString();
         const amount = this.matchToken(TOKEN_TYPE.COMMA, true)
             ? this.parseAmount()
             : 1;
@@ -298,6 +290,10 @@ class Parser {
      * Adds a new selector
      */
     public addSelector(selector: Selector) {
+        if (selector.identifier === 'item') {
+            throw new Error(`'item' is not an allowed selector name`);
+        }
+
         if (!this.hasSelector(selector.identifier)) {
             this.selectors[selector.identifier] = selector;
         } else {
@@ -325,6 +321,10 @@ class Parser {
      * @param identifier
      */
     public addAlias(name: string, identifier: Identifier) {
+        if (name === 'item') {
+            throw new Error(`'item' is not an allowed alias name`);
+        }
+
         if (!this.hasAlias(name)) {
             this._aliases[name] = identifier;
         } else {
