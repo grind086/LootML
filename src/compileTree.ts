@@ -3,7 +3,7 @@ import { Identifier, Item, Selector, SelectorObject } from './types';
 /**
  * Recursively compiles a parsed object tree into javascript
  */
-export default function compile(root: Identifier): string {
+export default function compileTree(root: Identifier): string {
     if (!root.compiled) {
         if (root.hasOwnProperty('type')) {
             // Compile items
@@ -44,7 +44,9 @@ export default function compile(root: Identifier): string {
 
             const compiledList =
                 '[' +
-                list.map(identObj => compile(identObj.identifier)).join(',') +
+                list
+                    .map(identObj => compileTree(identObj.identifier))
+                    .join(',') +
                 ']';
 
             root.compiled = selector.compile(

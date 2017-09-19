@@ -2,6 +2,10 @@ import Lexer from '../Lexer';
 import minify from '../minify';
 import Parser from '../Parser';
 
+import { compileJS } from '../';
+
+import * as fs from 'fs';
+
 const inputFile = `
 @MyItem
 item['MINE', 1-6]
@@ -31,23 +35,25 @@ oneOf {
 }
 `;
 
-const lexer = new Lexer(inputFile);
-const parser = new Parser(lexer.analyze());
-const compiled = parser.parse();
+fs.writeFileSync(__dirname + '/compiled.js', compileJS(inputFile));
 
-const fn = eval(compiled.test);
-const res = {
-    MINE: 0,
-    YOURS: 0,
-    item2: 0
-};
+// const lexer = new Lexer(inputFile);
+// const parser = new Parser(lexer.analyze());
+// const compiled = parser.parse();
 
-for (let i = 0; i < 1e6; i++) {
-    const type = fn().type;
-    res[type]++;
-    // console.log(type);
-}
+// const fn = eval(compiled.test);
+// const res = {
+//     MINE: 0,
+//     YOURS: 0,
+//     item2: 0
+// };
 
-console.log(res);
+// for (let i = 0; i < 1e6; i++) {
+//     const type = fn().type;
+//     res[type]++;
+//     // console.log(type);
+// }
+
+// console.log(res);
 
 // console.log(minify(inputFile));

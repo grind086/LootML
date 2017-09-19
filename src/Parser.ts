@@ -1,4 +1,4 @@
-import compile from './compile';
+import compileTree from './compileTree';
 import { TOKEN_TYPE } from './constants';
 import Token from './Token';
 import {
@@ -51,7 +51,7 @@ class Parser {
 
         const output: { [key: string]: string } = {};
         Object.keys(this._exports).forEach(
-            key => (output[key] = compile(this._exports[key]))
+            key => (output[key] = compileTree(this._exports[key]))
         );
 
         return output;
