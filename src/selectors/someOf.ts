@@ -6,10 +6,7 @@ const SomeOfSelector: Selector = {
     numArgs: 0,
     returns: RETURN_ITEM_TYPE.MULTIPLE,
 
-    compile(
-        { list, args, compiledList, isWeighted, totalWeights, weights },
-        err
-    ) {
+    compile({ list, args, compiledList, isWeighted, totalWeights, weights }, err) {
         if (args.length < 1) {
             err(`oneOf: Expected 1 argument but got ${args.length}`);
         }
@@ -22,9 +19,7 @@ const SomeOfSelector: Selector = {
         const length = list.length;
 
         const count = this.buildCount(amount);
-        const index = isWeighted
-            ? this.buildWeightedIndex(weights, totalWeights)
-            : `$frand(${length})`;
+        const index = isWeighted ? this.buildWeightedIndex(weights, totalWeights) : `$frand(${length})`;
 
         return this.buildRepeater(`${compiledList}[${index}]`, count);
     }

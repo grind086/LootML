@@ -4,7 +4,7 @@
  */
 export default function varNameGenerator() {
     let varCount = 0;
-    
+
     const getNextVarName = () => {
         let str = '';
         let d = ++varCount;
@@ -20,4 +20,4 @@ export default function varNameGenerator() {
     };
 
     return getNextVarName;
-};
+}

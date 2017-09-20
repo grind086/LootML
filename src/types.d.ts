@@ -74,11 +74,7 @@ export interface WeightedIdentifier {
 export interface Selector {
     identifier: string;
     numArgs: number;
-    returns: RETURN_ITEM_TYPE
+    returns: RETURN_ITEM_TYPE;
 
-    compile(
-        this: Compiler,
-        options: CompileOptions,
-        err: (message: string) => void
-    ): string;
+    compile(this: Compiler, options: CompileOptions, err: (message: string) => void): string;
 }

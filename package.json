@@ -4,5 +4,18 @@
   "description": "A language for creating loot tables",
   "main": "index.js",
   "author": "Rob Grindeland",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^1.7.0",
+    "tslint": "^5.7.0",
+    "tslint-plugin-prettier": "^1.2.0",
+    "typescript": "^2.5.2"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "tabWidth": 4,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "none"
+  }
 }

@@ -53,9 +53,7 @@ export default function minify(input: string) {
                     output += ' ';
                 }
 
-                output += aliasMap.hasOwnProperty(token.value)
-                    ? aliasMap[token.value]
-                    : token.value;
+                output += aliasMap.hasOwnProperty(token.value) ? aliasMap[token.value] : token.value;
                 lastConflictsWithIdentifier = true;
                 break;
             case TOKEN_TYPE.NUMBER:

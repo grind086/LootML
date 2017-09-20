@@ -1,11 +1,6 @@
 import { TOKEN_TYPE } from './constants';
 import Token from './Token';
-import {
-    Argument,
-    ParserObject,
-    Selector,
-    WeightedIdentifier
-} from './types';
+import { Argument, ParserObject, Selector, WeightedIdentifier } from './types';
 
 import AliasObject from './parserObjects/AliasObject';
 import ItemObject from './parserObjects/ItemObject';
@@ -26,7 +21,7 @@ class Parser {
 
     private _index: number = 0;
     private _aliases: { [name: string]: ParserObject } = {};
-    private _aliasObjects: { [name]: AliasObject } = {}
+    private _aliasObjects: { [name: string]: AliasObject } = {};
     private _exports: { [name: string]: ParserObject } = {};
 
     constructor(tokens: Token[], selectors?: Selector[]) {
@@ -53,10 +48,7 @@ class Parser {
         }
 
         if (Object.keys(this._exports).length === 0) {
-            this.syntaxError(
-                `A LootML file must have at least one export`,
-                null
-            );
+            this.syntaxError(`A LootML file must have at least one export`, null);
         }
 
         this.output = this._exports;
@@ -84,24 +76,15 @@ class Parser {
         // Add an alias if one is defined
         if (alias) {
             if (this.hasSelector(alias.value)) {
-                this.syntaxError(
-                    `Alias '${alias.value}' has the same name as a selector`,
-                    alias.location
-                );
+                this.syntaxError(`Alias '${alias.value}' has the same name as a selector`, alias.location);
             }
 
             if (this.hasExport(alias.value)) {
-                this.syntaxError(
-                    `Alias '${alias.value}' has the same name as an export`,
-                    alias.location
-                );
+                this.syntaxError(`Alias '${alias.value}' has the same name as an export`, alias.location);
             }
 
             if (this.hasAlias(alias.value)) {
-                this.syntaxError(
-                    `Duplicate alias ${alias.value}`,
-                    alias.location
-                );
+                this.syntaxError(`Duplicate alias ${alias.value}`, alias.location);
             }
 
             this.addAlias(alias.value, identifier);
@@ -110,17 +93,11 @@ class Parser {
         // Add an export if one is defined
         if (exp) {
             if (this.hasSelector(exp.value)) {
-                this.syntaxError(
-                    `Export '${exp.value}' has the same name as a selector`,
-                    exp.location
-                );
+                this.syntaxError(`Export '${exp.value}' has the same name as a selector`, exp.location);
             }
 
             if (this.hasAlias(exp.value)) {
-                this.syntaxError(
-                    `Export '${exp.value}' has the same name as an alias`,
-                    exp.location
-                );
+                this.syntaxError(`Export '${exp.value}' has the same name as an alias`, exp.location);
             }
 
             if (this.hasExport(exp.value)) {
@@ -135,22 +112,14 @@ class Parser {
      * Parses a list of arguments
      */
     public parseArgumentList(): Argument[] {
-        return this.parseList(
-            TOKEN_TYPE.LEFT_BRACKET,
-            TOKEN_TYPE.RIGHT_BRACKET,
-            () => this.parseArgument()
-        );
+        return this.parseList(TOKEN_TYPE.LEFT_BRACKET, TOKEN_TYPE.RIGHT_BRACKET, () => this.parseArgument());
     }
 
     /**
      * Parses a list of weighted identifiers
      */
     public parseIdentifierList(): WeightedIdentifier[] {
-        return this.parseList(
-            TOKEN_TYPE.LEFT_BRACE,
-            TOKEN_TYPE.RIGHT_BRACE,
-            () => this.parseWeightedIdentifier()
-        );
+        return this.parseList(TOKEN_TYPE.LEFT_BRACE, TOKEN_TYPE.RIGHT_BRACE, () => this.parseWeightedIdentifier());
     }
 
     /**
@@ -190,12 +159,7 @@ class Parser {
             case TOKEN_TYPE.STRING:
                 return this.parseString();
             default:
-                this.syntaxError(
-                    `Expected argument but got '${TOKEN_TYPE[
-                        peek.type
-                    ].toLowerCase()}'`,
-                    peek.location
-                );
+                this.syntaxError(`Expected argument but got '${TOKEN_TYPE[peek.type].toLowerCase()}'`, peek.location);
         }
 
         // This is unreachable, so return `null` but keep it out of the inferred types
@@ -206,9 +170,7 @@ class Parser {
      * Parses an optional number, followed by an identifer
      */
     public parseWeightedIdentifier(): WeightedIdentifier {
-        const weight = this.matchToken(TOKEN_TYPE.NUMBER)
-            ? this.parseNumber()
-            : 1;
+        const weight = this.matchToken(TOKEN_TYPE.NUMBER) ? this.parseNumber() : 1;
 
         const identifier = this.parseIdentifier();
 
@@ -228,10 +190,7 @@ class Parser {
         } else if (this.hasAlias(token.value)) {
             return this.parseAlias();
         } else {
-            this.syntaxError(
-                `Uknown identifier '${token.value}'`,
-                token.location
-            );
+            this.syntaxError(`Uknown identifier '${token.value}'`, token.location);
         }
 
         return (null as any) as ParserObject;
@@ -263,15 +222,10 @@ class Parser {
         const selector = this.getSelector(token.value);
 
         if (selector === null) {
-            this.syntaxError(
-                `Unknown selector '${token.value}'`,
-                token.location
-            );
+            this.syntaxError(`Unknown selector '${token.value}'`, token.location);
         }
 
-        const args = this.matchToken(TOKEN_TYPE.LEFT_BRACKET)
-            ? this.parseArgumentList()
-            : [];
+        const args = this.matchToken(TOKEN_TYPE.LEFT_BRACKET) ? this.parseArgumentList() : [];
 
         const list = this.parseIdentifierList();
 
@@ -286,9 +240,7 @@ class Parser {
         this.expectToken(TOKEN_TYPE.LEFT_BRACKET, true);
 
         const type = this.parseString();
-        const amount = this.matchToken(TOKEN_TYPE.COMMA, true)
-            ? this.parseAmount()
-            : 1;
+        const amount = this.matchToken(TOKEN_TYPE.COMMA, true) ? this.parseAmount() : 1;
 
         this.expectToken(TOKEN_TYPE.RIGHT_BRACKET, true);
 
@@ -339,10 +291,7 @@ class Parser {
                 case '0b':
                     return parseInt(value, 2);
                 default:
-                    this.syntaxError(
-                        `Invalid number '${token.value}'`,
-                        token.location
-                    );
+                    this.syntaxError(`Invalid number '${token.value}'`, token.location);
             }
         }
 
@@ -359,11 +308,7 @@ class Parser {
             throw new Error(`'item' is not an allowed selector name`);
         }
 
-        if (
-            !this.hasExport(name) &&
-            !this.hasAlias(name) &&
-            !this.hasSelector(name)
-        ) {
+        if (!this.hasExport(name) && !this.hasAlias(name) && !this.hasSelector(name)) {
             this.selectors[name] = selector;
         } else {
             throw new Error(`Duplicate selector '${name}'`);
@@ -394,11 +339,7 @@ class Parser {
             throw new Error(`'item' is not an allowed alias name`);
         }
 
-        if (
-            !this.hasExport(name) &&
-            !this.hasAlias(name) &&
-            !this.hasSelector(name)
-        ) {
+        if (!this.hasExport(name) && !this.hasAlias(name) && !this.hasSelector(name)) {
             this._aliases[name] = identifier;
         } else {
             throw new Error(`Duplicate identifier '${name}'`);
@@ -429,11 +370,7 @@ class Parser {
             throw new Error(`'item' is not an allowed alias name`);
         }
 
-        if (
-            !this.hasExport(name) &&
-            !this.hasAlias(name) &&
-            !this.hasSelector(name)
-        ) {
+        if (!this.hasExport(name) && !this.hasAlias(name) && !this.hasSelector(name)) {
             this._exports[name] = identifier;
         } else {
             throw new Error(`Duplicate identifier '${name}'`);
@@ -460,11 +397,7 @@ class Parser {
      * @param read Whether to read or peek
      * @param value Match token value
      */
-    public expectToken(
-        type: TOKEN_TYPE,
-        read: boolean,
-        value?: string | number
-    ) {
+    public expectToken(type: TOKEN_TYPE, read: boolean, value?: string | number) {
         const token = this.matchToken(type, read, value);
 
         if (token === null) {
@@ -473,21 +406,12 @@ class Parser {
 
             if (value !== undefined) {
                 if (type === peek.type) {
-                    this.syntaxError(
-                        `Expected '${value}' but got '${peek.value}'`,
-                        peek.location
-                    );
+                    this.syntaxError(`Expected '${value}' but got '${peek.value}'`, peek.location);
                 } else {
-                    this.syntaxError(
-                        `Expected '${value}' but got ${peekType}`,
-                        peek.location
-                    );
+                    this.syntaxError(`Expected '${value}' but got ${peekType}`, peek.location);
                 }
             } else {
-                this.syntaxError(
-                    `Unexpected ${peekType} '${peek.value}'`,
-                    peek.location
-                );
+                this.syntaxError(`Unexpected ${peekType} '${peek.value}'`, peek.location);
             }
         }
 
@@ -500,18 +424,10 @@ class Parser {
      * @param read Whether to read or peek
      * @param value Match token value
      */
-    public matchToken(
-        type: TOKEN_TYPE,
-        read?: boolean,
-        value?: string | number
-    ) {
+    public matchToken(type: TOKEN_TYPE, read?: boolean, value?: string | number) {
         const peek = this.peekToken();
 
-        if (
-            peek === undefined ||
-            peek.type !== type ||
-            (value !== undefined && peek.value !== value)
-        ) {
+        if (peek === undefined || peek.type !== type || (value !== undefined && peek.value !== value)) {
             return null;
         }
 
@@ -527,10 +443,7 @@ class Parser {
      * @param message Error message
      * @param location Error location
      */
-    public syntaxError(
-        message: string,
-        location: { line: number; column: number } | null
-    ) {
+    public syntaxError(message: string, location: { line: number; column: number } | null) {
         if (location) {
             const { line, column } = location;
             throw new SyntaxError(`${message} (at ${line}:${column})`);

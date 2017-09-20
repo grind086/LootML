@@ -20,12 +20,15 @@ class Compiler {
 
     constructor(parsed: { [key: string]: ParserObject }, lib?: { [fnName: string]: string }) {
         this.parsed = parsed;
-        this.lib = Object.assign({
-            rand: `n=>Math.random()*n`,
-            frand: `n=>Math.floor(Math.random()*n)`,
-            crand: `n=>Math.ceil(Math.random()*n)`,
-            cat: `a=>Array.prototype.concat.apply([],a)`
-        }, lib);
+        this.lib = Object.assign(
+            {
+                rand: `n=>Math.random()*n`,
+                frand: `n=>Math.floor(Math.random()*n)`,
+                crand: `n=>Math.ceil(Math.random()*n)`,
+                cat: `a=>Array.prototype.concat.apply([],a)`
+            },
+            lib
+        );
     }
 
     public compile() {
@@ -114,7 +117,7 @@ class Compiler {
         if (alias.compiled !== void 0) {
             return;
         }
-        
+
         const shortName = this._nextVarname();
 
         this._aliases[alias.name] = this.compileBranch(alias.identifier);
@@ -146,9 +149,7 @@ class Compiler {
             weights.push(weighted.weight);
         }
 
-        const compiledListElements = list.map(
-            obj => this.compileBranch(obj.identifier)
-        );
+        const compiledListElements = list.map(obj => this.compileBranch(obj.identifier));
 
         const compiledList = '[' + compiledListElements.join(',') + ']';
         const compiled = sel.compile.call(
@@ -178,7 +179,7 @@ class Compiler {
      */
     public buildCount(amount: number | number[]): string {
         let count: string;
-        
+
         if ('number' === typeof amount) {
             count = amount.toString();
         } else {

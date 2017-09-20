@@ -80,11 +80,7 @@ class Lexer {
         }
 
         const location = this.getLocation();
-        return new Token(
-            TOKEN_TYPE.ERROR,
-            `Unexpected character ${this.readChar()}`,
-            location
-        );
+        return new Token(TOKEN_TYPE.ERROR, `Unexpected character ${this.readChar()}`, location);
     }
 
     /**
@@ -116,11 +112,7 @@ class Lexer {
         let value = '';
         while (true) {
             if (this.isEOF()) {
-                return new Token(
-                    TOKEN_TYPE.ERROR,
-                    'Unterminated comment block',
-                    location
-                );
+                return new Token(TOKEN_TYPE.ERROR, 'Unterminated comment block', location);
             }
 
             if (this.peekChar() === '*' && this.peekChar(1) === '/') {
@@ -167,11 +159,7 @@ class Lexer {
             const ch = this.peekChar();
 
             if (this.isEOF() || this.isNewline(ch)) {
-                return new Token(
-                    TOKEN_TYPE.ERROR,
-                    'Unterminated string literal',
-                    location
-                );
+                return new Token(TOKEN_TYPE.ERROR, 'Unterminated string literal', location);
             }
 
             if (ch === delimiter) {

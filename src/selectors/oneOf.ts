@@ -6,14 +6,9 @@ const OneOfSelector: Selector = {
     numArgs: 0,
     returns: RETURN_ITEM_TYPE.SINGLE,
 
-    compile(
-        { list, compiledList, isWeighted, totalWeights, weights },
-        err
-    ) {
+    compile({ list, compiledList, isWeighted, totalWeights, weights }, err) {
         const length = list.length;
-        const index = isWeighted
-            ? this.buildWeightedIndex(weights, totalWeights)
-            : `$frand(${length})`;
+        const index = isWeighted ? this.buildWeightedIndex(weights, totalWeights) : `$frand(${length})`;
 
         return `()=>${compiledList}[${index}]()`;
     }
