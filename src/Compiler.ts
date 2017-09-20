@@ -1,5 +1,5 @@
 import { PARSER_OBJECT_TYPE, RETURN_ITEM_TYPE } from './constants';
-import { Argument, ParserObject, Selector, WeightedIdentifier } from './types';
+import { Argument, Location, ParserObject, Selector, WeightedIdentifier } from './types';
 import varNameGenerator from './varNameGenerator';
 
 import AliasObject from './parserObjects/AliasObject';
@@ -213,7 +213,7 @@ class Compiler {
      * @param message Error message
      * @param location Error location
      */
-    public compileError(message: string, location: { line: number; column: number } | null) {
+    public compileError(message: string, location: Location | null) {
         if (location) {
             const { line, column } = location;
             throw new Error(`${message} (at ${line}:${column})`);

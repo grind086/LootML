@@ -1,5 +1,6 @@
 import { TOKEN_TYPE } from './constants';
 import Token from './Token';
+import { Location } from './types';
 
 /**
  * Converts some given input to tokens
@@ -212,7 +213,7 @@ class Lexer {
     /**
      * Returns an object with the current file location
      */
-    public getLocation() {
+    public getLocation(): Location {
         return { line: this._line, column: this._column };
     }
 

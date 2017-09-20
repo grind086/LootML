@@ -1,8 +1,22 @@
 import Compiler from './Compiler';
 import { PARSER_OBJECT_TYPE, RETURN_ITEM_TYPE, TOKEN_TYPE } from './constants';
 
+/**
+ * Possible types for LootML arguments
+ */
 export type Argument = string | number | number[];
 
+/**
+ * Defines a location in the source file
+ */
+export interface Location {
+    line: number;
+    column: number;
+}
+
+/**
+ * Options passed to individual selector compilers
+ */
 export interface CompileOptions {
     args: Argument[];
 
@@ -28,7 +42,7 @@ export interface ItemResult {
 export interface ParserObject {
     type: PARSER_OBJECT_TYPE;
     compiled: string;
-    location: { line: number, column: number };
+    location: Location;
 }
 
 /**

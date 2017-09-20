@@ -1,6 +1,6 @@
 import { TOKEN_TYPE } from './constants';
 import Token from './Token';
-import { Argument, ParserObject, Selector, WeightedIdentifier } from './types';
+import { Argument, Location, ParserObject, Selector, WeightedIdentifier } from './types';
 
 import AliasObject from './parserObjects/AliasObject';
 import ItemObject from './parserObjects/ItemObject';
@@ -444,7 +444,7 @@ class Parser {
      * @param message Error message
      * @param location Error location
      */
-    public syntaxError(message: string, location: { line: number; column: number } | null) {
+    public syntaxError(message: string, location: Location | null) {
         if (location) {
             const { line, column } = location;
             throw new SyntaxError(`${message} (at ${line}:${column})`);
