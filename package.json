@@ -5,12 +5,29 @@
   "main": "index.js",
   "author": "Rob Grindeland",
   "license": "MIT",
+  "scripts": {
+    "lint": "tslint -c tslint.json 'src/**/*.ts'",
+    "pretest": "npm run lint",
+    "test": "jest"
+  },
   "devDependencies": {
+    "jest": "^21.1.0",
     "prettier": "^1.7.0",
+    "ts-jest": "^21.0.1",
     "tslint": "^5.7.0",
     "tslint-config-prettier": "^1.5.0",
     "tslint-plugin-prettier": "^1.2.0",
     "typescript": "^2.5.2"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "transform": {
+      "\\.ts$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "/__tests__/.*\\.ts$"
   },
   "prettier": {
     "printWidth": 120,
