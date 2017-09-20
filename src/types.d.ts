@@ -25,6 +25,7 @@ export interface ItemResult {
 export interface ParserObject {
     type: PARSER_OBJECT_TYPE;
     compiled: string;
+    location: { line: number, column: number };
 }
 
 /**

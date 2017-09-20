@@ -208,7 +208,7 @@ class Parser {
         }
 
         if (!this._aliasObjects.hasOwnProperty(token.value)) {
-            this._aliasObjects[token.value] = new AliasObject(token.value, alias!);
+            this._aliasObjects[token.value] = new AliasObject(token.value, alias!, token.location);
         }
 
         return this._aliasObjects[token.value];
@@ -229,14 +229,15 @@ class Parser {
 
         const list = this.parseIdentifierList();
 
-        return new SelectorObject(selector!, args, list);
+        return new SelectorObject(selector!, args, list, token.location);
     }
 
     /**
      * Parses an item
      */
     public parseItem(): ItemObject {
-        this.expectToken(TOKEN_TYPE.IDENTIFIER, true, 'item');
+        const token = this.expectToken(TOKEN_TYPE.IDENTIFIER, true, 'item');
+
         this.expectToken(TOKEN_TYPE.LEFT_BRACKET, true);
 
         const type = this.parseString();
@@ -244,7 +245,7 @@ class Parser {
 
         this.expectToken(TOKEN_TYPE.RIGHT_BRACKET, true);
 
-        return new ItemObject(type, amount);
+        return new ItemObject(type, amount, token.location);
     }
 
     /**

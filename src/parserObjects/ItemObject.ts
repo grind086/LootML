@@ -7,7 +7,8 @@ class ItemObject implements ParserObject {
 
     constructor(
         public name: string,
-        public amount: number | number[]
+        public amount: number | number[],
+        public location: { line: number, column: number }
     ) {}
 }
 

@@ -92,7 +92,7 @@ class Compiler {
                     this.compileSelector(obj as SelectorObject);
                     break;
                 default:
-                    throw new Error(`Invalid parser object type ${obj.type}`);
+                    this.compileError(`Invalid parser object type ${obj.type}`, obj.location);
             }
         }
 
@@ -163,7 +163,7 @@ class Compiler {
                 weights
             },
             (err: string) => {
-                throw new Error(err);
+                throw this.compileError(`${sel.identifier}: ${err}`, selector.location);
             }
         );
 
@@ -205,6 +205,20 @@ class Compiler {
 
     public buildRepeater(fn: string, count: string): string {
         return `()=>((i,n,o)=>{for(;i<n;i++)o.push((${fn})());return o})(0,${count},[])`;
+    }
+
+    /**
+     * Throws a compile error
+     * @param message Error message
+     * @param location Error location
+     */
+    public compileError(message: string, location: { line: number; column: number } | null) {
+        if (location) {
+            const { line, column } = location;
+            throw new Error(`${message} (at ${line}:${column})`);
+        } else {
+            throw new Error(message);
+        }
     }
 }
 

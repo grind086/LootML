@@ -8,7 +8,8 @@ class SelectorObject implements ParserObject {
     constructor(
         public selector: Selector,
         public args: Argument[],
-        public list: WeightedIdentifier[]
+        public list: WeightedIdentifier[],
+        public location: { line: number, column: number }
     ) {}
 }
 

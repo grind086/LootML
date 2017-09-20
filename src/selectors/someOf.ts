@@ -8,11 +8,11 @@ const SomeOfSelector: Selector = {
 
     compile({ list, args, compiledList, isWeighted, totalWeights, weights }, err) {
         if (args.length < 1) {
-            err(`oneOf: Expected 1 argument but got ${args.length}`);
+            err(`Expected 1 argument but got ${args.length}`);
         }
 
         if ('string' === typeof args[0]) {
-            err(`oneOf: First argument must be number or range`);
+            err(`First argument must be number or range`);
         }
 
         const amount: number | number[] = args[0] as any;

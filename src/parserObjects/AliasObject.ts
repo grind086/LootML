@@ -7,7 +7,8 @@ class AliasObject implements ParserObject {
 
     constructor(
         public name: string,
-        public identifier: ParserObject
+        public identifier: ParserObject,
+        public location: { line: number, column: number }
     ) {}
 }
 

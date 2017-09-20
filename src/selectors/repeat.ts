@@ -8,15 +8,15 @@ const RepeatSelector: Selector = {
 
     compile({ list, args, compiledList }, err) {
         if (args.length < 1) {
-            err(`repeat: Expected 1 argument but got ${args.length}`);
+            err(`Expected 1 argument but got ${args.length}`);
         }
 
         if ('string' === typeof args[0]) {
-            err(`repeat: First argument must be number or range`);
+            err(`First argument must be number or range`);
         }
 
         if (list.length !== 1) {
-            err('repeat: Must have exactly one element in the list');
+            err('Must have exactly one element in the list');
         }
 
         const amount: number | number[] = args[0] as any;
