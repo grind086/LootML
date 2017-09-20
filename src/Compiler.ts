@@ -6,6 +6,9 @@ import AliasObject from './parserObjects/AliasObject';
 import ItemObject from './parserObjects/ItemObject';
 import SelectorObject from './parserObjects/SelectorObject';
 
+/**
+ * Converts parser objects to javascript
+ */
 class Compiler {
     public parsed: { [key: string]: ParserObject };
 
@@ -20,17 +23,20 @@ class Compiler {
 
     constructor(parsed: { [key: string]: ParserObject }, lib?: { [fnName: string]: string }) {
         this.parsed = parsed;
-        this.lib = Object.assign(
-            {
+        this.lib = {
+            ...({
                 rand: `n=>Math.random()*n`,
                 frand: `n=>Math.floor(Math.random()*n)`,
                 crand: `n=>Math.ceil(Math.random()*n)`,
                 cat: `a=>Array.prototype.concat.apply([],a)`
-            },
-            lib
-        );
+            } as any),
+            ...lib
+        };
     }
 
+    /**
+     * Parse input and produce a javascript string
+     */
     public compile() {
         // Build the exports
         const exportObjects: string[] = [];
@@ -66,19 +72,9 @@ class Compiler {
         ].join('');
     }
 
-    public buildExports() {
-        const parsed = this.parsed;
-    }
-
-    public buildLib() {
-        const lib = this.lib;
-        const libFns = Object.keys(lib)
-            .map(name => `$${name}=${lib[name]}`)
-            .join(',');
-
-        return `const ${libFns};`;
-    }
-
+    /**
+     * Compiles the given parser object and returns a string of javascript
+     */
     public compileBranch(obj: ParserObject) {
         if (!obj.compiled) {
             switch (obj.type) {
@@ -113,6 +109,9 @@ class Compiler {
         item.compiled = compiled;
     }
 
+    /**
+     * Compiles an `AliasObject` to a javascript function and sets its `compiled` property
+     */
     public compileAlias(alias: AliasObject) {
         if (alias.compiled !== void 0) {
             return;
@@ -126,6 +125,9 @@ class Compiler {
         alias.compiled = shortName;
     }
 
+    /**
+     * Compiles an `SelectorObject` to a javascript function and sets its `compiled` property
+     */
     public compileSelector(selector: SelectorObject) {
         if (selector.compiled) {
             return;
@@ -167,15 +169,11 @@ class Compiler {
             }
         );
 
-        if (sel.returns === RETURN_ITEM_TYPE.MULTIPLE) {
-            selector.compiled = `()=>$cat((${compiled})())`;
-        } else {
-            selector.compiled = compiled;
-        }
+        selector.compiled = sel.returns === RETURN_ITEM_TYPE.MULTIPLE ? `()=>$cat((${compiled})())` : compiled;
     }
 
     /**
-     * 
+     * Turns an amount into a javascript string that evaluates to a number in its range.
      */
     public buildCount(amount: number | number[]): string {
         let count: string;
@@ -194,7 +192,7 @@ class Compiler {
     }
 
     /**
-     * 
+     * Returns a string that evaluates to a weighted index
      */
     public buildWeightedIndex(weights: number[], total: number): string {
         const length = weights.length;
@@ -203,6 +201,9 @@ class Compiler {
         return `((r,w,i,l)=>{for(;i<l;i++)if((r-=w[i])<=0)return i;})($crand(${total}),${weightArr},0,${length})`;
     }
 
+    /**
+     * Returns a function that evaluates to an array of elements resulting from running `fn` `count` times.
+     */
     public buildRepeater(fn: string, count: string): string {
         return `()=>((i,n,o)=>{for(;i<n;i++)o.push((${fn})());return o})(0,${count},[])`;
     }

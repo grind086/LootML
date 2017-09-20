@@ -1,6 +1,9 @@
 import { RETURN_ITEM_TYPE } from '../constants';
 import { Selector } from '../types';
 
+/**
+ * Returns a single member from the input list. Supports weighted indexing.
+ */
 const OneOfSelector: Selector = {
     identifier: 'oneOf',
     numArgs: 0,

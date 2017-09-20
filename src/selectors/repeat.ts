@@ -1,6 +1,10 @@
 import { RETURN_ITEM_TYPE } from '../constants';
 import { Selector } from '../types';
 
+/**
+ * Evaluates its single list member a given number of times. Must have exactly one
+ * list item.
+ */
 const RepeatSelector: Selector = {
     identifier: 'repeat',
     numArgs: 0,

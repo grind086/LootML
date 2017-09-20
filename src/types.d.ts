@@ -22,6 +22,9 @@ export interface ItemResult {
     count: number;
 }
 
+/**
+ * The javascript object representation of a parsed identifier
+ */
 export interface ParserObject {
     type: PARSER_OBJECT_TYPE;
     compiled: string;
@@ -37,7 +40,7 @@ export interface WeightedIdentifier {
 }
 
 /**
- * Interface that all selectors must implement (TODO: Turn this into an abstract class)
+ * Schematic for a selector
  */
 export interface Selector {
     identifier: string;

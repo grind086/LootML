@@ -12,7 +12,7 @@ import RepeatSelector from './selectors/repeat';
 import SomeOfSelector from './selectors/someOf';
 
 /**
- * Converts a list of tokens to javascript
+ * Converts a list of tokens to parser objects
  */
 class Parser {
     public tokens: Token[];
@@ -171,7 +171,6 @@ class Parser {
      */
     public parseWeightedIdentifier(): WeightedIdentifier {
         const weight = this.matchToken(TOKEN_TYPE.NUMBER) ? this.parseNumber() : 1;
-
         const identifier = this.parseIdentifier();
 
         return { weight, identifier };
@@ -193,6 +192,7 @@ class Parser {
             this.syntaxError(`Uknown identifier '${token.value}'`, token.location);
         }
 
+        // This is unreachable, so return `null` but keep it out of the inferred types
         return (null as any) as ParserObject;
     }
 
@@ -226,7 +226,6 @@ class Parser {
         }
 
         const args = this.matchToken(TOKEN_TYPE.LEFT_BRACKET) ? this.parseArgumentList() : [];
-
         const list = this.parseIdentifierList();
 
         return new SelectorObject(selector!, args, list, token.location);
@@ -279,6 +278,7 @@ class Parser {
         const token = this.expectToken(TOKEN_TYPE.NUMBER, true);
         const format = token.value.slice(0, 2);
 
+        // Sure, we can support 4 different integer formats
         if (/0[a-z]/.test(format)) {
             const value = token.value.slice(2);
 

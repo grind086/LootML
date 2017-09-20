@@ -1,6 +1,9 @@
 import { RETURN_ITEM_TYPE } from '../constants';
 import { Selector } from '../types';
 
+/**
+ * Returns items from a list by selecting from it a given number of times. Supports weighted indexing.
+ */
 const SomeOfSelector: Selector = {
     identifier: 'someOf',
     numArgs: 0,

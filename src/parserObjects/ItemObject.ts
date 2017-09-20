@@ -1,6 +1,9 @@
 import { PARSER_OBJECT_TYPE } from '../constants';
 import { ParserObject } from '../types';
 
+/**
+ * Object representation of an item identifier
+ */
 class ItemObject implements ParserObject {
     public type = PARSER_OBJECT_TYPE.ITEM;
     public compiled: string;
@@ -8,7 +11,7 @@ class ItemObject implements ParserObject {
     constructor(
         public name: string,
         public amount: number | number[],
-        public location: { line: number, column: number }
+        public location: { line: number; column: number }
     ) {}
 }
 
