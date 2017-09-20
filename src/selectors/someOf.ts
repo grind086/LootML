@@ -22,18 +22,11 @@ const SomeOfSelector: Selector = {
         const length = list.length;
 
         const count = this.buildCount(amount);
-        let index = '0';
+        const index = isWeighted
+            ? this.buildWeightedIndex(weights, totalWeights)
+            : `$frand(${length})`;
 
-        if (!isWeighted) {
-            index = `Math.floor(Math.random()*${length})`;
-        } else {
-            const weightArr = `[${weights.join(',')}]`;
-            const rand = `Math.ceil(Math.random()*${totalWeights})`;
-
-            index = `((r,w,i,l)=>{for(;i<l;i++)if((r-=w[i])<=0)return i;})(${rand},${weightArr},0,${length})`;
-        }
-
-        return `()=>((i,n,o)=>{for(;i<n;i++)o.push(${compiledList}[${index}]());return o})(0,${count},[])`;
+        return this.buildRepeater(`${compiledList}[${index}]`, count);
     }
 };
 

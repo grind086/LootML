@@ -11,16 +11,9 @@ const OneOfSelector: Selector = {
         err
     ) {
         const length = list.length;
-        let index = '0';
-
-        if (!isWeighted) {
-            index = `Math.floor(Math.random()*${length})`;
-        } else {
-            const weightArr = `[${weights.join(',')}]`;
-            const rand = `Math.ceil(Math.random()*${totalWeights})`;
-
-            index = `((r,w,i,l)=>{for(;i<l;i++)if((r-=w[i])<=0)return i;})(${rand},${weightArr},0,${length})`;
-        }
+        const index = isWeighted
+            ? this.buildWeightedIndex(weights, totalWeights)
+            : `$frand(${length})`;
 
         return `()=>${compiledList}[${index}]()`;
     }

@@ -23,7 +23,7 @@ const RepeatSelector: Selector = {
         const compiledSingle = compiledList.slice(1).slice(0, -1);
         const count = this.buildCount(amount);
 
-        return `()=>((i,n,o)=>{for(;i<n;i++)o.push((${compiledSingle})());return o})(0,${count},[])`;
+        return this.buildRepeater(compiledSingle, count);
     }
 };
 

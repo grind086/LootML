@@ -1,10 +1,6 @@
 import { PARSER_OBJECT_TYPE, RETURN_ITEM_TYPE } from './constants';
-import {
-    Argument,
-    ParserObject,
-    Selector,
-    WeightedIdentifier
-} from './types';
+import { Argument, ParserObject, Selector, WeightedIdentifier } from './types';
+import varNameGenerator from './varNameGenerator';
 
 import AliasObject from './parserObjects/AliasObject';
 import ItemObject from './parserObjects/ItemObject';
@@ -18,7 +14,9 @@ class Compiler {
      */
     public lib: { [fnName: string]: string };
 
+    private _nextVarname = varNameGenerator();
     private _aliases: { [name: string]: string } = {};
+    private _aliasMap: { [fullName: string]: string } = {};
 
     constructor(parsed: { [key: string]: ParserObject }, lib?: { [fnName: string]: string }) {
         this.parsed = parsed;
@@ -44,7 +42,7 @@ class Compiler {
         const aliasConstants: string[] = [];
 
         Object.keys(this._aliases).forEach(name => {
-            aliasConstants.push(`${name}=${this._aliases[name]}`);
+            aliasConstants.push(`${this._aliasMap[name]}=${this._aliases[name]}`);
         });
 
         // Build the library
@@ -113,12 +111,16 @@ class Compiler {
     }
 
     public compileAlias(alias: AliasObject) {
-        if (alias.compiled) {
+        if (alias.compiled !== void 0) {
             return;
         }
+        
+        const shortName = this._nextVarname();
 
         this._aliases[alias.name] = this.compileBranch(alias.identifier);
-        alias.compiled = alias.name;
+        this._aliasMap[alias.name] = shortName;
+
+        alias.compiled = shortName;
     }
 
     public compileSelector(selector: SelectorObject) {
@@ -184,10 +186,24 @@ class Compiler {
             const max = amount[1];
             const range = max - min + 1;
 
-            count = `Math.floor(Math.random()*${range})+${min}`;
+            count = `$frand(${range})+${min}`;
         }
 
         return count;
+    }
+
+    /**
+     * 
+     */
+    public buildWeightedIndex(weights: number[], total: number): string {
+        const length = weights.length;
+        const weightArr = `[${weights.join(',')}]`;
+
+        return `((r,w,i,l)=>{for(;i<l;i++)if((r-=w[i])<=0)return i;})($crand(${total}),${weightArr},0,${length})`;
+    }
+
+    public buildRepeater(fn: string, count: string): string {
+        return `()=>((i,n,o)=>{for(;i<n;i++)o.push((${fn})());return o})(0,${count},[])`;
     }
 }
 

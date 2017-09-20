@@ -26,6 +26,7 @@ class Parser {
 
     private _index: number = 0;
     private _aliases: { [name: string]: ParserObject } = {};
+    private _aliasObjects: { [name]: AliasObject } = {}
     private _exports: { [name: string]: ParserObject } = {};
 
     constructor(tokens: Token[], selectors?: Selector[]) {
@@ -247,7 +248,11 @@ class Parser {
             this.syntaxError(`Unknown alias '${token.value}'`, token.location);
         }
 
-        return new AliasObject(token.value, alias!);
+        if (!this._aliasObjects.hasOwnProperty(token.value)) {
+            this._aliasObjects[token.value] = new AliasObject(token.value, alias!);
+        }
+
+        return this._aliasObjects[token.value];
     }
 
     /**
