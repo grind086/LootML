@@ -22,39 +22,6 @@ export interface ItemResult {
     count: number;
 }
 
-/**
- * The javascript object representation of an identifier (output by the parser)
- */
-export type IdentifierObject = SelectorObject | ItemObject | AliasObject;
-
-/**
- * The javascript object representation of an item (output by the parser)
- */
-export interface ItemObject {
-    type: string;
-    amount: number | number[];
-    compiled?: string;
-}
-
-/**
- * The javascript object representation of a selector (output by the parser)
- */
-export interface SelectorObject {
-    selector: Selector;
-    args: Argument[];
-    list: WeightedIdentifier[];
-    compiled?: string;
-}
-
-/**
- * The javascript object representation of an alias (output by the parser)
- */
-export interface AliasObject {
-    name: string;
-    identifier: IdentifierObject;
-    compiled?: string;
-}
-
 export interface ParserObject {
     type: PARSER_OBJECT_TYPE;
     compiled: string;
