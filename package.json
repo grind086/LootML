@@ -1,6 +1,6 @@
 {
   "name": "loot-ml",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "description": "A language for creating loot tables",
   "main": "dist/index.js",
   "author": "Rob Grindeland",
