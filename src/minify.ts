@@ -1,69 +1,61 @@
 import { TOKEN_TYPE } from './constants';
 import Lexer from './Lexer';
 import Parser from './Parser';
+import Token from './Token';
+import varNameGenerator from './varNameGenerator';
 
-export default function minify(input: string) {
-    const lex = new Lexer(input);
+export default function minify(input: string, skipParsing?: boolean) {
+    const tokens = new Lexer(input).analyze();
+    const aliasMap: { [name: string]: string } = {};
+    const getNextVarName = varNameGenerator();
 
     // Check for errors by just going ahead and parsing it
-    const parser = new Parser(lex.analyze());
-    parser.parse();
-
-    // Map aliases to short names
-    const aliasMap: { [name: string]: string } = {};
-    let varCount = 0;
-
-    const getNextVarName = () => {
-        let str = '';
-        let d = ++varCount;
-        let m;
-
-        while (d > 0) {
-            m = (d - 1) % 26;
-            str = String.fromCharCode(97 + m) + str;
-            d = Math.floor((d - m) / 26);
-        }
-
-        return str;
-    };
+    if (!skipParsing) {
+        const parser = new Parser(tokens);
+        parser.parse();
+    }
 
     // Then write it back out from the tokens
     let output = '';
-    let lastConflictsWithIdentifier = false;
+    let last: Token = { type: null, value: null } as any;
 
-    for (const token of lex.output) {
+    for (const token of tokens) {
         switch (token.type) {
             case TOKEN_TYPE.COMMENT:
                 break;
             case TOKEN_TYPE.ALIAS:
                 aliasMap[token.value] = getNextVarName();
                 output += '@' + aliasMap[token.value];
-                lastConflictsWithIdentifier = true;
                 break;
             case TOKEN_TYPE.EXPORT:
                 output += '$' + token.value;
-                lastConflictsWithIdentifier = true;
                 break;
             case TOKEN_TYPE.STRING:
                 output += "'" + token.value + "'";
-                lastConflictsWithIdentifier = false;
                 break;
             case TOKEN_TYPE.IDENTIFIER:
-                if (lastConflictsWithIdentifier) {
+                if (
+                    last.type === TOKEN_TYPE.ALIAS ||
+                    last.type === TOKEN_TYPE.EXPORT ||
+                    (last.type === TOKEN_TYPE.NUMBER && last.value === '0')
+                ) {
                     output += ' ';
                 }
 
                 output += aliasMap.hasOwnProperty(token.value) ? aliasMap[token.value] : token.value;
-                lastConflictsWithIdentifier = true;
                 break;
             case TOKEN_TYPE.NUMBER:
+                if (last.type === TOKEN_TYPE.NUMBER) {
+                    output += ' ';
+                }
+
                 output += token.value;
-                lastConflictsWithIdentifier = token.value === '0';
                 break;
             default:
                 output += token.value;
-                lastConflictsWithIdentifier = false;
         }
+
+        last = token;
     }
 
     return output;
