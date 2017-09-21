@@ -66,7 +66,7 @@ class Compiler {
         // Put it all together
         return [
             `((${libNames.join(',')})=>{`,
-            `const ${aliasConstants.join(',')};`,
+            aliasConstants.length ? `const ${aliasConstants.join(',')};` : '',
             `return {${exportObjects.join(',')}}`,
             `})(${libFunctions.join(',')})`
         ].join('');
