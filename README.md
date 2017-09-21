@@ -86,17 +86,17 @@ identifier = letter | "_", { letter | "_" } ;
 (* Extended types *)
 amount = number, "-", number ;
 argument = number | amount | identifier ;
-alias = "@", identifier ;
-export = "$", identifier ;
+alias = "@", identifier, identifier ;
+export = "$", identifier, identifier ;
+weighted_element = [ number ], item | identifier | selector ;
 
 (* List elements *)
 argument_list = "[", [ argument, { ",", argument } ], "]" ;
-selection_list = "{", item | identifier | selector, { ",", item | selector | identifier }, "}" ;
+selection_list = "{", weighted_element, { ",", weighted_element }, "}" ;
 
 (* Functional elements *)
 item = "item", "[", string, [ number | amount ], "]" ;
 selector = identifier, [ argument_list ], selection_list ;
-
 ```
 
 ### Structure
