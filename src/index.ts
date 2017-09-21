@@ -1,30 +1,36 @@
+import Compiler from './Compiler';
 import Lexer from './Lexer';
 import minify from './minify';
 import Parser from './Parser';
 import { ItemResult } from './types';
 
-export function compileJS(input: string) {
-    const raw = compileRaw(input);
-    const props = Object.keys(raw).map(key => `${key}:${raw[key]}`);
-    return `module.exports={${props.join(',')}};`;
+/**
+ * Compiles the given program to a commonJS module
+ * @param input A LootML program in string form
+ */
+export function compileCommonJS(input: string): string {
+    return `module.exports=${compileRaw(input)}`;
 }
 
-export function compileFunctions(input: string) {
-    const raw = compileRaw(input);
-    const fns: { [key: string]: () => ItemResult[] } = {};
-
-    Object.keys(raw).forEach(key => {
-        // tslint:disable-next-line no-eval
-        fns[key] = eval(raw[key]);
-    });
-
-    return fns;
+/**
+ * Compiles the given program to an object of executable functions (USES EVAL)
+ * @param input A LootML program in string form
+ */
+export function compileFunctions(input: string): { [names: string]: () => ItemResult | ItemResult[] } {
+    // tslint:disable-next-line no-eval
+    return eval(compileRaw(input));
 }
 
-export function compileRaw(input: string) {
+/**
+ * Compiles the given program to an IIFE that will return the exports object
+ * @param input A LootML program in string form
+ */
+export function compileRaw(input: string): string {
     const lexer = new Lexer(input);
     const parser = new Parser(lexer.analyze());
-    return parser.parse();
+    const compiler = new Compiler(parser.parse());
+
+    return compiler.compile();
 }
 
-export { Lexer, minify, Parser };
+export { Compiler, Lexer, minify, Parser };
