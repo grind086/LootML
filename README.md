@@ -60,6 +60,45 @@ fns.DeliciousSnack();
 
 ## Syntax
 
+The following is the [EBNF](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form) description of LootML
+
+```
+(* Simple characters *)
+letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
+       | "H" | "I" | "J" | "K" | "L" | "M" | "N"
+       | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+       | "V" | "W" | "X" | "Y" | "Z" | "a" | "b"
+       | "c" | "d" | "e" | "f" | "g" | "h" | "i"
+       | "j" | "k" | "l" | "m" | "n" | "o" | "p"
+       | "q" | "r" | "s" | "t" | "u" | "v" | "w"
+       | "x" | "y" | "z" ;
+symbol = "[" | "]" | "{" | "}" | "," | "-" | "_" 
+       | "@" | "$" ;
+digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" 
+      | "7" | "8" | "9" ;
+
+(* Primitive types *)
+string = ( "'", { letter | digit | symbol | " " }, "'" ) 
+       | ( '"', { letter | digit | symbol | " " }, '"' ) ;
+number = digit, { digit } ;
+identifier = letter | "_", { letter | "_" } ;
+
+(* Extended types *)
+amount = number, "-", number ;
+argument = number | amount | identifier ;
+alias = "@", identifier ;
+export = "$", identifier ;
+
+(* List elements *)
+argument_list = "[", [ argument, { ",", argument } ], "]" ;
+selection_list = "{", item | identifier | selector, { ",", item | selector | identifier }, "}" ;
+
+(* Functional elements *)
+item = "item", "[", string, [ number | amount ], "]" ;
+selector = identifier, [ argument_list ], selection_list ;
+
+```
+
 ### Structure
 
 > **item[type, amount?]**  
