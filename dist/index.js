@@ -13,7 +13,7 @@ exports.Parser = Parser_1.default;
  * @param input A LootML program in string form
  */
 function compileCommonJS(input) {
-    return `module.exports=${compileRaw(input)}`;
+    return `module.exports=${compileIIFE(input)}`;
 }
 exports.compileCommonJS = compileCommonJS;
 /**
@@ -22,17 +22,17 @@ exports.compileCommonJS = compileCommonJS;
  */
 function compileFunctions(input) {
     // tslint:disable-next-line no-eval
-    return eval(compileRaw(input));
+    return eval(compileIIFE(input));
 }
 exports.compileFunctions = compileFunctions;
 /**
  * Compiles the given program to an IIFE that will return the exports object
  * @param input A LootML program in string form
  */
-function compileRaw(input) {
+function compileIIFE(input) {
     const lexer = new Lexer_1.default(input);
     const parser = new Parser_1.default(lexer.analyze());
     const compiler = new Compiler_1.default(parser.parse());
     return compiler.compile();
 }
-exports.compileRaw = compileRaw;
+exports.compileIIFE = compileIIFE;
