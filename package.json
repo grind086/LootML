@@ -8,7 +8,9 @@
   "scripts": {
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "pretest": "npm run lint",
-    "test": "jest"
+    "test": "jest",
+    "build": "npm test && tsc",
+    "build-examples": "node dist/buildExamples"
   },
   "devDependencies": {
     "@types/jest": "^20.0.8",

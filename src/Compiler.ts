@@ -35,7 +35,7 @@ class Compiler {
     }
 
     /**
-     * Parse input and produce a javascript string
+     * Parse input and produce a javascript string that will return an exports object
      */
     public compile() {
         // Build the exports
@@ -65,7 +65,7 @@ class Compiler {
 
         // Put it all together
         return [
-            `module.exports=((${libNames.join(',')})=>{`,
+            `((${libNames.join(',')})=>{`,
             `const ${aliasConstants.join(',')};`,
             `return {${exportObjects.join(',')}}`,
             `})(${libFunctions.join(',')})`
