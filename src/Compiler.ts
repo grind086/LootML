@@ -1,5 +1,5 @@
 import { PARSER_OBJECT_TYPE, RETURN_ITEM_TYPE } from './constants';
-import { Argument, Location, ParserObject, Selector, WeightedIdentifier } from './types';
+import { Location, ParserObject } from './types';
 import varNameGenerator from './varNameGenerator';
 
 import AliasObject from './parserObjects/AliasObject';
