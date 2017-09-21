@@ -398,7 +398,7 @@ class Parser {
      * @param read Whether to read or peek
      * @param value Match token value
      */
-    public expectToken(type: TOKEN_TYPE, read: boolean, value?: string | number) {
+    public expectToken(type: TOKEN_TYPE, read?: boolean, value?: string | number) {
         const token = this.matchToken(type, read, value);
 
         if (token === null) {
