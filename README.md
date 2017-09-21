@@ -1,6 +1,62 @@
 # LootML
 
-LootML is a simple markup language for building loot tables.
+[LootML](https://github.com/grind086/LootML) is a simple markup language for building loot tables.
+
+## Installation
+
+```
+yarn add loot-ml
+```
+
+Other useful scripts
+
+```
+npm run test
+npm run build
+npm run build-examples
+```
+
+## API
+
+> **compileCommonJS(input: string)**  
+> Compiles the given program to a commonJS module.
+
+> **compileFunctions(input: string)**  
+> Compiles the given program to an object of executable functions (USES EVAL).
+
+> **compileIIFE(input: string)**  
+> Compiles the given program to an IIFE that will return the exports object.
+
+### Example
+```js
+import { compileFunctions } from 'loot-ml';
+
+// or
+// const compileFunctions = require('loot-ml');
+
+const fns = compileFunctions(`
+    @Fruits
+    oneOf {
+        item['Apple'],
+        item['Pear'],
+        item['Banana']
+    }
+
+    $FruitSalad
+    repeat[4] {
+        Fruits
+    }
+
+    $DeliciousSnack
+    oneOf {
+        Fruits,
+        item['Mango']
+    }
+`);
+
+fns.FruitSalad();
+fns.DeliciousSnack();
+```
 
 ## Syntax
 
@@ -15,7 +71,7 @@ LootML is a simple markup language for building loot tables.
 > `item['item3', 4-7]`
 
 > **selector[params] { weight? identifier, ... }**  
-> Makes a selection from the given list. `selector` is one of the selector types listed below. Some selectors allow weighting of different options using the number `weight`, will be `1` if omitted. `identifier` can be another selector, or an item.  
+> Makes a selection from the given list. `selector` is one of the selector types listed below. Some selectors allow weighting of different options using the number `weight` (default `1`). `identifier` can be another selector, or an item.  
 >  
 > Examples:
 > ```

@@ -9,7 +9,7 @@ import { ItemResult } from './types';
  * @param input A LootML program in string form
  */
 export function compileCommonJS(input: string): string {
-    return `module.exports=${compileRaw(input)}`;
+    return `module.exports=${compileIIFE(input)}`;
 }
 
 /**
@@ -18,14 +18,14 @@ export function compileCommonJS(input: string): string {
  */
 export function compileFunctions(input: string): { [names: string]: () => ItemResult | ItemResult[] } {
     // tslint:disable-next-line no-eval
-    return eval(compileRaw(input));
+    return eval(compileIIFE(input));
 }
 
 /**
  * Compiles the given program to an IIFE that will return the exports object
  * @param input A LootML program in string form
  */
-export function compileRaw(input: string): string {
+export function compileIIFE(input: string): string {
     const lexer = new Lexer(input);
     const parser = new Parser(lexer.analyze());
     const compiler = new Compiler(parser.parse());
